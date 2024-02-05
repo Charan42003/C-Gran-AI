@@ -2,6 +2,7 @@ import { View, Text, TouchableOpacity, Image, StyleSheet, Alert } from 'react-na
 import React, { useEffect, useState } from 'react'
 import { NavigationProp } from '@react-navigation/native'
 import { widthPercentageToDP as wp, heightPercentageToDP as hp } from 'react-native-responsive-screen'
+import LottieView from "lottie-react-native"
 
 
 const Welcome = ({ navigation }: { navigation: NavigationProp<any> }) => {
@@ -11,7 +12,7 @@ const Welcome = ({ navigation }: { navigation: NavigationProp<any> }) => {
     useEffect(() => {
         setTimeout(() => {
             navigation.navigate("Home")
-        }, 2000);
+        }, 4000);
     }, [isFocused])
 
     useEffect(() => {
@@ -27,15 +28,17 @@ const Welcome = ({ navigation }: { navigation: NavigationProp<any> }) => {
     return (
         <View style={styles.container}>
 
+            <LottieView
+                source={require("../../assets/jsonImgs/robo.json")}
+                style={styles.Img}
+                autoPlay
+                loop
+            />
             <View style={styles.wrapper}>
-                <Text style={styles.title}>C'Gran Ai</Text>
-                <Text style={styles.desc}>The Future is here, powered by AI</Text>
+                <Text style={styles.title}>C'Gran <Text style={{ color: '#50e73f' }}>Ai.</Text></Text>
+                <Text style={styles.desc}>Made with ❤️ by Charan</Text>
             </View>
 
-            <Image
-                source={require("../assets/images/bot.png")}
-                style={styles.Img}
-            />
         </View>
     )
 }
@@ -48,7 +51,9 @@ const styles = StyleSheet.create({
     },
     Img: {
         position: 'absolute',
-        bottom: hp(5),
+        top: hp(-8),
+        height: hp(100),
+        width: wp(100)
     },
     title: {
         color: '#333232',
@@ -63,7 +68,9 @@ const styles = StyleSheet.create({
         fontSize: wp(4.4)
     },
     wrapper: {
-        marginTop: hp(13)
+        // marginTop: hp(13)
+        position: 'absolute',
+        bottom: hp(10)
     }
 })
 

@@ -1,68 +1,20 @@
-import { View, Text, TouchableOpacity, StyleSheet, ScrollView, Image } from 'react-native'
-import React, { useEffect, useState } from 'react'
+import { View, Text, TouchableOpacity, StyleSheet, ScrollView, Image, Alert, TextInput } from 'react-native'
+import React, { useEffect, useRef, useState } from 'react'
 import { SafeAreaView } from 'react-native-safe-area-context'
 import { NavigationProp, useNavigation } from '@react-navigation/native'
 import { widthPercentageToDP as wp, heightPercentageToDP as hp } from 'react-native-responsive-screen'
-import Voice from '@react-native-community/voice';
-// import GifImage from '@lowkey/react-native-gif';
+import Voice from "@react-native-voice/voice"
 
 import Features from './features'
+import { openaiFetch } from '../api/apenAi'
+import LottieView from 'lottie-react-native'
 
-const dummyMessages = [
-    {
-        role: 'user',
-        content: "how are you?"
-    },
-    {
-        role: 'assistant',
-        content: "I'm fine, How may I help you today."
-    },
-    {
-        role: 'user',
-        content: "create an image of a dog playing with cat"
-    },
-    {
-        role: 'assistant',
-        content: "https://storage.googleapis.com/pai-images/ae74b3002bfe4b538493ca7aedb6a300.jpeg"
-    },
-    {
-        role: 'user',
-        content: "create an image of a dog playing with cat"
-    },
-    {
-        role: 'assistant',
-        content: "https://storage.googleapis.com/pai-images/ae74b3002bfe4b538493ca7aedb6a300.jpeg"
-    },
-    {
-        role: 'user',
-        content: "create an image of a dog playing with cat"
-    },
-    {
-        role: 'assistant',
-        content: "https://storage.googleapis.com/pai-images/ae74b3002bfe4b538493ca7aedb6a300.jpeg"
-    },
-    {
-        role: 'user',
-        content: "create an image of a dog playing with cat"
-    },
-    {
-        role: 'assistant',
-        content: "https://storage.googleapis.com/pai-images/ae74b3002bfe4b538493ca7aedb6a300.jpeg"
-    },
-    {
-        role: 'user',
-        content: "create an image of a dog playing with cat"
-    },
-    {
-        role: 'assistant',
-        content: "https://storage.googleapis.com/pai-images/ae74b3002bfe4b538493ca7aedb6a300.jpeg"
-    },
-]
 
 
 const Home = ({ navigation }: { navigation: NavigationProp<any> }) => {
 
-    const [message, setMessage] = useState([dummyMessages])
+    const [message, setMessage] = useState([])
+    const [response, setResponse] = useState('')
     const [recording, setRecording] = useState(false)
     const [speaking, setSpeaking] = useState(true)
 
@@ -70,51 +22,78 @@ const Home = ({ navigation }: { navigation: NavigationProp<any> }) => {
         setMessage([])
     }
 
-    // const speechStartHandler = (e) => {
-    //     console.log("speech start handler")
-    // }
-    // const speechEndHandler = (e) => {
-    //     console.log("speech end handler")
-    // }
-    // const speechResultsHandler = (e) => {
-    //     console.log("voice event: ", e)
-    // }
-    // const speechErrorHandler = (e) => {
-    //     console.log("speech errror: ", e)
-    // }
+    const onSpeechStart = (e: any) => {
+        // console.log("hello")
+        console.log("onSpeechStart: " + e)
+    }
+    const onSpeechEnd = (e: any) => {
+        // console.log("hello")
+        console.log("onSpeechEnd : " + e)
+    }
+    const onSpeechResults = (e: any) => {
+        // const recognizedText = e.value[0]; // Access the recognized text
+        console.log('Recognized text:', e)
+    }
+    useEffect(() => {
+
+        Voice.onSpeechStart = onSpeechStart;
+        Voice.onSpeechEnd = onSpeechEnd;
+        Voice.onSpeechResults = onSpeechResults;
+
+        return () => {
+            Voice.removeAllListeners()
+        }
+    }, [])
+
+
+
+    const respond = () => {
+        let newMessages = [...message];
+        newMessages.push({ role: 'user', content: response })
+        setMessage(newMessages)
+        openaiFetch(response, newMessages).then(res => {
+            if (res.success) {
+                setMessage([...res.data]);
+                setResponse('')
+            } else {
+                setResponse('')
+                Alert.alert("Error", res.msg)
+            }
+        })
+    }
 
     const startRecording = async () => {
+        try {
+            const a = await Voice.isAvailable()
+            console.log("a : " + a)
+            await Voice.start('en-US')
+
+        } catch (error) {
+            console.log("Errorrr: " + error)
+        }
         setRecording(true);
-        // try {
-        //     await Voice.start('en-US')
-        // } catch (error) {
-        //     console.error(error)
-        // }
     }
 
     const stopRecording = async () => {
-        // try {
-        //     await Voice.stop()
-        // } catch (error) {
-        //     console.error(error)
-        // }
+        try {
+            await Voice.stop()
+            await Voice.destroy()
+            console.log('destroyed')
+        } catch (error) {
+            console.log(error)
+        }
         setRecording(false);
     }
 
-    // useEffect(() => {
-    //     // console.log(Voice.getSpeechRecognitionServices())
-    //     Voice.onSpeechStart = speechStartHandler;
-    //     Voice.onSpeechEnd = speechEndHandler;
-    //     Voice.onSpeechResults = speechResultsHandler;
-    //     Voice.onSpeechError = speechErrorHandler;
-    //     return () => {
-    //         Voice.destroy().then(Voice.removeAllListeners)
-    //     }
-    // })
-
     return (
         <View style={styles.container}>
-            <SafeAreaView style={{ flex: 1 }}>
+            <LottieView
+                source={require('../../assets/jsonImgs/robo.json')}
+                autoPlay
+                loop
+                style={{ width: '100%', height: '100%', position: 'absolute', top: 0, left: 0, zIndex: 1 }}
+            />
+            <SafeAreaView style={{ flex: 1, position: 'relative', zIndex: 3 }}>
                 {
                     message.length > 0 ? (
                         <View style={styles.assistantWrap}>
@@ -126,9 +105,12 @@ const Home = ({ navigation }: { navigation: NavigationProp<any> }) => {
                                 <ScrollView
                                     bounces={false}
                                     showsVerticalScrollIndicator={false}
+                                    style={{
+                                        backgroundColor: 'transparent'
+                                    }}
                                 >
                                     {
-                                        dummyMessages.map((message, index) => (
+                                        message.map((message, index) => (
                                             <View>
                                                 {
                                                     message.role == 'assistant' ? (
@@ -151,7 +133,7 @@ const Home = ({ navigation }: { navigation: NavigationProp<any> }) => {
                                                                 <View
                                                                     style={styles.assistantMessage}
                                                                 >
-                                                                    <Text style={{ color: '#000', fontSize: wp(4.5) }}>
+                                                                    <Text style={{ color: '#fff', fontSize: wp(4.5) }}>
                                                                         {message.content}
                                                                     </Text>
                                                                 </View>
@@ -187,14 +169,14 @@ const Home = ({ navigation }: { navigation: NavigationProp<any> }) => {
                         recording ? (
                             <TouchableOpacity onPress={() => stopRecording()}>
                                 <Image
-                                    source={require('../assets/images/voiceLoading.gif')}
+                                    source={require('../../assets/images/voiceLoading.gif')}
                                     style={{ width: hp(10), height: hp(10), borderRadius: 50 }}
                                 />
                             </TouchableOpacity>
                         ) : (
                             <TouchableOpacity onPress={() => startRecording()}>
                                 <Image
-                                    source={require('../assets/images/recordingIcon.png')}
+                                    source={require('../../assets/images/recordingIcon.png')}
                                     style={{ width: hp(10), height: hp(10), borderRadius: 50 }}
                                 />
                             </TouchableOpacity>
@@ -221,6 +203,13 @@ const Home = ({ navigation }: { navigation: NavigationProp<any> }) => {
                         )
                     }
                 </View>
+
+                {/* temp start */}
+                <TextInput value={response} placeholder='Search anything' onChangeText={(e) => setResponse(e)} style={{ position: 'absolute', bottom: 40 }} />
+                <TouchableOpacity onPress={() => respond()}>
+                    <View style={{ backgroundColor: 'red', padding: 10, borderRadius: 50, position: 'absolute', bottom: 40, right: 20, zIndex: 30 }} />
+                </TouchableOpacity>
+                {/* temp end */}
             </SafeAreaView>
 
         </View>
@@ -233,8 +222,6 @@ const styles = StyleSheet.create({
         backgroundColor: '#fff'
     },
     assistantWrap: {
-        // flex: 1,
-        backgroundColor: '#fff'
     },
     assistant: {
         color: "#383737",
@@ -243,7 +230,6 @@ const styles = StyleSheet.create({
         marginLeft: 10,
     },
     chatMain: {
-        backgroundColor: '#c9c7c7',
         borderRadius: 25,
         padding: 20,
         margin: 10,
@@ -258,7 +244,8 @@ const styles = StyleSheet.create({
 
     },
     assistantMessage: {
-        backgroundColor: '#acaceb',
+        // backgroundColor: '#acaceb',
+        backgroundColor: '#c9c7c7',
         borderRadius: 15,
         borderTopLeftRadius: 0,
         marginVertical: 8,

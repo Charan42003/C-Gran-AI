@@ -8,8 +8,8 @@ import {
   Text,
   View
 } from 'react-native';
-import Home from './screens/home';
-import Welcome from './screens/welcome';
+import Home from './src/screens/home';
+import Welcome from './src/screens/welcome';
 
 function App(): React.JSX.Element {
 
