@@ -1,1 +1,1 @@
-export const API_KEY_OPENAI = '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'
+export const API_KEY_OPENAI = 'API_KEY'
