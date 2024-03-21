@@ -187,27 +187,7 @@ const Home = ({ navigation }: { navigation: NavigationProp<any> }) => {
                             <Icon name={recording ? "microphone-slash" : "microphone"} size={30} color={recording ? colors.red : colors.grey} />
                         </TouchableOpacity>
                     </View>
-                    {
-                        // Decide if it's needed
-                        // message.length > 0 && (
-                        //     <TouchableOpacity
-                        //         style={{ position: 'absolute', right: wp(10) }}
-                        //         onPress={() => clear()}
-                        //     >
-                        //         <Text style={{ padding: 5, backgroundColor: '#8787ec', fontSize: wp(4.5), borderRadius: 10 }}>Clear</Text>
-                        //     </TouchableOpacity>
-                        // )
-                    }
-                    {/* Bring it the topbar {
-                        speaking && (
-                            <TouchableOpacity
-                                style={{ position: 'absolute', left: wp(10) }}
-                                onPress={() => setSpeaking(false)}
-                            >
-                                <Text style={{ padding: 5, backgroundColor: 'red', fontSize: wp(4.5), borderRadius: 10 }}>Stop</Text>
-                            </TouchableOpacity>
-                        )
-                    } */}
+
                     <TextInput
                         value={response}
                         placeholder='Search anything'

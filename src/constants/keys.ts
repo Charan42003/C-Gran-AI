@@ -1,1 +1,1 @@
-export const API_KEY_OPENAI = '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'
+export const API_KEY_OPENAI = ''
