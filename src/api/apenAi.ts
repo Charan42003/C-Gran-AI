@@ -5,7 +5,7 @@ const chatGPTEndpoint = 'https://api.openai.com/v1/chat/completions'
 const dalleEndpoint = 'https://api.openai.com/v1/images/generations'
 
 
-export const openaiFetch = async (prompt: any, messages: []) => {
+export const openaiFetch = async (prompt: any, messages: {}[]) => {
     const requestData = {
         model: "gpt-3.5-turbo",
         messages: [{

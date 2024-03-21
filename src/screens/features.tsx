@@ -13,7 +13,7 @@ const Features = () => {
                 style={{ width: '100%', height: '100%' }}
             />
             <Text style={styles.title}>Hello!! How can I help you?</Text>
-            <Text style={styles.name}>C'Gran <Text style={{ color: '#50e73f' }}>Ai.</Text></Text>
+            <Text style={styles.name}>C'Gran <Text style={{ color: '#50e73f', }}>Ai.</Text></Text>
         </View>
     )
 }
